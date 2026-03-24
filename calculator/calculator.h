@@ -1,11 +1,25 @@
 #pragma once
 
-#include <iostream>
 #include <string>
-#include <cmath>
 
 using Number = double;
 
-bool ReadNumber(Number& result);
+class Calculator {
+    Number number_ = 0.0;
+    Number memory_ = 0.0;
+    bool has_memory_ = false;
 
-bool RunCalculatorCycle();
+public:
+    void Set(Number n);
+    Number GetNumber() const;
+    void Add(Number n);
+    void Sub(Number n);
+    void Div(Number n);
+    void Mul(Number n);
+    void Pow(Number n);
+    void Save();
+    void Load();
+    bool HasMem() const;
+    std::string GetNumberRepr() const;
+    void ClearMemory();
+};
