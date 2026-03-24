@@ -1,104 +1,52 @@
 #include "calculator.h"
 
-using namespace std;
-
-bool ReadNumber(Number& result) {
-    if (cin >> result) {
-        return true;
-    }
-    return false;
+void Calculator::Set(Number n) {
+    number_ = n;
 }
 
-bool RunCalculatorCycle() {
-    Number num;
-    Number memory;
+Number Calculator::GetNumber() const {
+    return number_;
+}
 
-    if (!(cin >> num)) {
-        cerr << "Error: Numeric operand expected " << endl;
-        return 0;
+void Calculator::Add(Number n) {
+    number_ += n;
+}
+
+void Calculator::Sub(Number n) {
+    number_ -= n;
+}
+
+void Calculator::Div(Number n) {
+    if (n != 0.0) {
+        number_ = number_ / n;
     }
+}
 
-    string commond;
-    bool memory_initialized = false;
+void Calculator::Mul(Number n) {
+    number_ *= n;
+}
 
-    while (true) {
-        if (!(cin >> commond)) {
-        break;
-        }
-        if (commond == "+") {
-            Number operand;
-            if (!(cin >> operand)) {
-                cerr << "Error: Numeric operand expected" << endl;
-                break;
-            }
-            num += operand;
-        }
-        else if (commond == "-") {
-            Number operand;
-            if (!(cin >> operand)) {
-                cerr << "Error: Numeric operand expected" << endl;
-                break;
-            }
-            num -= operand;
-        }
-        else if (commond == "/") {
-            Number operand;
-            if (!(cin >> operand)) {
-                cerr << "Error: Numeric operand expected" << endl;
-                break;
-            }
-            num /= operand;
-        }
-        else if (commond == "*") {
-            Number operand;
-            if (!(cin >> operand)) {
-                cerr << "Error: Numeric operand expected" << endl;
-                break;
-            }
-            num *= operand;
-        }
-        else if (commond == "**") {
-            Number operand;
-            if (!(cin >> operand)) {
-                cerr << "Error: Numeric operand expected" << endl;
-                break;
-            }
-            num = pow(num,operand);
-        }
-        else if (commond == "=") {
-            cout << num << endl;
-        }
-        else if (commond == "q") {
-            break;
-        }
-        else if (commond == "c") {
-            num = 0;
-        }
-        else if (commond == ":") {
-            Number operand;
-            if (!(cin >> operand)) {
-                cerr << "Error: Numeric operand expected" << endl;
-            }
-            num = operand;
-        }
-        else if (commond == "s" || commond == "l") {
-            if (commond == "s"){
-            memory = num;
-            memory_initialized = true;
-           }
-            else {
-                if (!(memory_initialized)) {
-                    cerr << "Error: Memory is empty" << endl;
-                }
-                else {
-                    num = memory;
-                }
-            }
-        }
-        else {
-            cerr << "Error: Unknown token " << commond << endl;
-            break;
-        }
-    }
-    return 0;
+void Calculator::Pow(Number n) {
+    number_ = std::pow(number_, n);
+}
+
+void Calculator::Save() {
+    memory_ = number_;
+    has_memory_ = true;
+}
+
+void Calculator::Load() {
+    number_ = memory_;
+}
+
+bool Calculator::HasMem() const {
+    return has_memory_;
+}
+
+std::string Calculator::GetNumberRepr() const {
+    return std::to_string(number_);
+}
+
+void Calculator::ClearMemory() {
+    has_memory_ = false;
 }
