@@ -31,6 +31,10 @@ void MainWindow::SetText(const QString& text) {
 }
 
 void MainWindow::AddText(const QString& suffix) {
+    if (current_operation_ == Operation::NO_OPERATION) {
+        ui->l_formula->setText("");
+    }
+
     QString newText = input_number_ + suffix;
     input_number_ = NormalizeNumber(newText);
     active_number_ = input_number_.toDouble();
@@ -94,20 +98,26 @@ void MainWindow::on_tb_comma_clicked()
     }
 }
 
-void MainWindow::on_tb_negate_clicked()
-{
+void MainWindow::on_tb_negate_clicked(){
+    if (input_number_.isEmpty()) {
+        return;
+    }
+
     if (input_number_.startsWith("-")) {
         input_number_ = input_number_.mid(1);
-        SetText(input_number_);
     } else {
         input_number_.prepend("-");
-        SetText(input_number_);
     }
+    SetText(input_number_);
 }
+
 
 void MainWindow::on_tb_backspace_clicked()
 {
     if (!input_number_.isEmpty()) {
+        if (input_number_ == "-0") {
+            input_number_ = input_number_.mid(1);
+        }
         input_number_.chop(1);
         SetText(input_number_);
     }
@@ -140,36 +150,21 @@ QString MainWindow::NormalizeNumber(const QString &text) {
 
 void MainWindow::SetOperation(MainWindow::Operation op) {
     if (current_operation_ != Operation::NO_OPERATION && !input_number_.isEmpty()) {
-        double secondNumber = input_number_.toDouble();
-        switch (current_operation_) {
-        case Operation::ADDITION:
-            calculator_.Add(secondNumber);
-            break;
-        case Operation::SUBTRACTION:
-            calculator_.Sub(secondNumber);
-            break;
-        case Operation::MULTIPLICATION:
-            calculator_.Mul(secondNumber);
-            break;
-        case Operation::DIVISION:
-            if (secondNumber != 0.0) calculator_.Div(secondNumber);
-            break;
-        case Operation::POWER:
-            calculator_.Pow(secondNumber);
-            break;
-        default:
-            break;
-        }
-        active_number_ = calculator_.GetNumber();
+        QString firstNumber = QString::number(calculator_.GetNumber(), 'g', 15);
+        QString formula = firstNumber + " " + OpToString(op);
+        ui->l_formula->setText(formula);
+
+        current_operation_ = op;
+
         input_number_ = "";
         ui->l_result->setText(QString::number(active_number_, 'g', 15));
+        return;
     }
 
     if (current_operation_ == Operation::NO_OPERATION) {
         calculator_.Set(active_number_);
+        current_operation_ = op;
     }
-
-    current_operation_ = op;
 
     QString str = QString::number(calculator_.GetNumber(), 'g', 15);
     QString formula = str + " " + OpToString(op);
@@ -242,6 +237,7 @@ void MainWindow::on_tb_equal_clicked()
     active_number_ = calculator_.GetNumber();
     QString resultText = QString::number(active_number_, 'g', 15);
     ui->l_result->setText(resultText);
+    ui->l_formula->setText("");
     input_number_.clear();
     current_operation_ = Operation::NO_OPERATION;
 }
